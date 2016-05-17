@@ -1,0 +1,19 @@
+<html>
+<head>
+<title>Log In</title>
+</head>
+<body>
+<h1><%=project%>: Log In</h1>
+
+<% if (locals.message) { %>
+   <h2><%=message%></h2>
+<% } %>
+
+<form method="post" action="<%= locals.action || '' %>">
+<label>Username: <input type="text" name="username" /></label><br />
+<label>Password: <input type="password" name="password" /></label><br />
+<input type="submit" value="Log In" />
+</form>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "parts": [
+    {
+      "name": "main",
+      "pre": ["ep_bazki/main"],
+      "hooks": {
+        "padUpdate": "ep_gameki/edits",
+        "bazkiSavingPad": "ep_gameki/edits",
+        "expressCreateServer": "ep_gameki/browse",
+        "handleMessage": "ep_gameki/browse",
+        "clientVars": "ep_gameki/editing",
+        "padInitToolbar": "ep_gameki/editing",
+        "eejsBlock_styles": "ep_gameki/editing",
+        "eejsBlock_body": "ep_gameki/editing"
+      },
+      "client_hooks": {
+        "postToolbarInit": "ep_gameki/static/js/client",
+        "handleClientMessage_CUSTOM": "ep_gameki/static/js/client",
+        "documentReady": "ep_gameki/static/js/client"
+      }
+    }
+  ]
+}

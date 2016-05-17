@@ -1,0 +1,106 @@
+<html>
+<head>
+<title><%=path%></title>
+<% include ../../ep_bazki/templates/head.ejs %>
+<script type="text/javascript">
+function $(id) {
+  return document.getElementById(id);
+}
+document.domain = document.domain;
+</script>
+</head>
+<body>
+<div class="wrapper">
+<% include ../../ep_bazki/templates/header.ejs %>
+<div class="stretch">
+<div class="wrapper" style="flex: 3">
+<input id="comment-h" class="disclose" type="checkbox" checked>
+<h2><label for="comment-h">GM Notes:</label></h2>
+<iframe id="comment" src="/p/<%=padid%>~comment?showChat=false" style="flex: 1"></iframe>
+<input id="body-h" class="disclose" type="checkbox" checked>
+<h2><label for="body-h">Body:</label></h2>
+<iframe id="body" src="/p/<%=padid%>~body" style="flex: 3"></iframe>
+</div>
+<div style="flex: 1; overflow: auto">
+<h2>Info</h2>
+<div id="metadata">
+Loading...
+</div>
+<p>
+<input id="metadata-key"> <button onclick="setMetadata($('metadata-key').value, '');">Add Field</button>
+</p>
+</div>
+
+<script type="text/javascript">
+var pending_macro = null;
+var pending_metadata = null;
+var current_macro = null;
+function handleMetadata(macro, metadata) {
+  if (document.activeElement.parentElement.id == "metadata"
+      && document.activeElement.contentEditable) {
+    // Setting it now would mess up focus, and it's probably our own edit
+    // anyways, so let it alone for now.
+    pending_macro = macro;
+    pending_metadata = metadata;
+    return;
+  }
+  current_macro = macro;
+
+  var html;
+  if (!metadata) {
+    html = macro;
+  } else {
+    var advanced = '';
+    html = '';
+    for (var i = 0; i < metadata.length; ++i) {
+      var bit = metadata[i][0] + ': <div';
+      if (metadata[i][0] != '!') {
+        bit += ' contenteditable="plaintext-only" oninput="setMetadata(\'' + metadata[i][0] + '\', this.innerText)" onblur="handlePending()"';
+      }
+      bit += '>' + metadata[i][1] + '</div>';
+      if (metadata[i][0] == 'type' || metadata[i][0] == 'file') {
+        advanced += bit;
+      } else {
+        html += bit;
+      }
+    }
+    html += '<input id="advanced" class="disclose" type="checkbox">';
+    html += '<label for="advanced">Show Advanced</label>';
+    html += '<div>';
+    html += 'macro: <div>' + macro + '</div>';
+    html += advanced;
+    html += '</div>';
+  }
+  if ($('metadata').innerHTML != html) {
+    $('metadata').innerHTML = html;
+  }
+}
+
+function handlePending() {
+  if (pending_metadata) {
+    handleMetadata(pending_macro, pending_metadata);
+    pending_macro = pending_metadata = null;
+  }
+}
+
+function setMetadata(key, value) {
+  try {
+    var pad = $('body').contentWindow.pad;
+    pad.sendClientMessage({
+      type: 'SET_METADATA',
+      key: key,
+      value: value,
+      list: <%-JSON.stringify(list)%>,
+      macro: current_macro,
+    });
+  } catch (e) {
+    alert(e);
+  }
+}
+
+handleMetadata(<%-JSON.stringify(macro)%>, 
+               <%-JSON.stringify(metadata) || 'null'%>);
+</script>
+
+</body>
+</html>

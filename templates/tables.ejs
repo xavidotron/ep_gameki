@@ -1,0 +1,179 @@
+<html>
+<head>
+<title><%=locals.title || path%></title>
+<% include ../../ep_bazki/templates/head.ejs %>
+</head>
+<body>
+<% include ../../ep_bazki/templates/header.ejs %>
+
+<table>
+<% for (var key in data) { %>
+  <tr><th colspan="10">
+    <% if (/^[a-z]+$/.exec(key)) { %>
+      <% if (locals.title) { %>
+        <h2><a href="/g/<%=project%>/e/Lists/<%=key%>-LIST.tex"><%=util.pluralForClass(project, key)%></a></h2>
+      <% } else { %>
+        <h2><%=util.pluralForClass(project, key)%></h2>
+      <% } %>
+      <form action="/g/<%=project%>/new/<%=key%>" method="get">
+        <input type="submit" value="Create New <%=util.singularForClass(project, key)%>" />
+        <input type="hidden" name="return_to" value="<%=url%>" />
+      </form>
+    <% } else if (key == 'Notes') { %>
+      <h2><%=key%></h2>
+      <form action="/g/<%=project%>/create/<%=key%>/" method="post">
+        <input type="text" name="file" value="<%=new Date().toISOString().slice(0,10)%>.txt" />
+        <input type="submit" value="New <%=key%>" />
+        <input type="hidden" name="return_to" value="<%=url%>" />
+      </form>
+    <% } else { %>
+      <h2><%=key%></h2>
+    <% } %>
+  </th></tr>
+  <tr>
+    <th></th>
+    <% for (var j = 0; j < columns.length; ++j) { %>
+      <% if (locals.column_whitelist && column_whitelist[key]
+             && column_whitelist[key].indexOf(columns[j]) == -1) {  %>
+        <th class="suppressed"></th>
+      <% } else { %>
+        <th><%=columns[j]%></th>
+      <% } %>
+    <% } %>
+  </tr>
+    <% for (var i = 0; i < data[key].length; ++i) { %>
+      <tr id="<%=data[key][i].macro || data[key][i].path%>">
+        <td>
+          <% if (data[key][i].path && data[key][i].file_exists) { %>
+            <a class="quiet <%=util.iconClass(data[key][i].path)%>" href="/g/<%=project%>/e/<%=data[key][i].path%>" title="Go to Sheet"></a></td>
+          <% } else { %>
+            <% var cdir = util.directoryForClass(project, key); %>
+            <% if (cdir) { %>
+              <form method="post" action="/g/<%=project%>/create/<%=cdir%>">
+                <input type="hidden" name="file" value="<%=data[key][i].file || data[key][i].macro.slice(2) + '.tex'%>">
+                <input type="hidden" name="macro" value="<%=data[key][i].macro%>">
+                <button class="moon-file-add" title="Add File"></button>
+              </form>
+            <% } %>
+          <% } %>
+        </td>
+        <% for (var j = 0; j < columns.length; ++j) { %>
+          <% if (locals.column_whitelist && column_whitelist[key]
+                 && column_whitelist[key].indexOf(columns[j]) == -1) { %>
+            <td class="suppressed"></td>
+          <% } else if (columns[j] == 'macro' 
+                        || data[key][i][columns[j]+'_readonly']) { %>
+            <td><%=data[key][i][columns[j]]%></td>
+          <% } else { %>
+            <td class="metadata-<%=columns[j]%>" contenteditable="plaintext-only" oninput='setMetadata(<%-JSON.stringify(data[key][i].macro || null)%>, <%-JSON.stringify(data[key][i].list || (data[key][i].path))%>, <%-JSON.stringify(columns[j])%>, this.innerText)'><%=data[key][i][columns[j]]%></td>
+          <% } %>
+        <% } %>
+      </tr>
+    <% } %>
+<% } %>
+</table>
+
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+/* hacks because I don't want to figure out the require machinery to use this
+   properly */
+var exports = {};
+function require() { return {}; }
+</script>
+<script type="text/javascript" src="/static/js/pad_utils.js"></script>
+
+<script type="text/javascript">
+function setMetadata(macro, list_or_path, key, value) {
+  var payload = {
+    type: 'SET_METADATA',
+    key: key,
+    value: value,
+  };
+  if (macro) {
+    payload.macro = macro;
+    payload.list = list_or_path;
+  } else {
+    payload.path = list_or_path;
+  }
+  socket.json.send(
+    {
+      type: "COLLABROOM",
+      component: "pad",
+      data: {
+        type: "CLIENT_MESSAGE",
+        payload: payload
+      }
+    });
+}
+
+function updateId(id, map) {
+  var row = document.getElementById(id);
+  if (row) {
+    for (var k in map) {
+      if (k != 'macro' && k != '!') {
+        var td = row.querySelector('.metadata-' + k);
+        if (td) {
+          if (td.innerText != map[k]) {
+            if (td == document.activeElement) {
+              td.onblur = function (val) {
+                this.innerText = val;
+                this.onblur = null;
+              }.bind(td, map[k]);
+            } else {
+              td.innerText = map[k];
+              td.onblur = null;
+            }
+          } else {
+            td.onblur = null;
+          }
+        }
+        
+        // If this has a create button, update that as well.
+        if (k == 'file') {
+          var hidden = row.querySelector('input[name="file"]');
+          if (hidden) {
+            hidden.value = map[k] || id.slice(2) + '.tex';
+          }
+        }       
+      }
+    }
+  } else {
+    console.log('not found:', id);
+  }
+}
+
+var socket = io.connect('/', {
+  path: '/socket.io',
+  resource: 'socket.io',
+  'max reconnection attempts': 3,
+  'sync disconnect on unload' : false
+});
+
+var token = readCookie("token");
+if (token == null)
+{
+  token = "t." + randomString();
+  createCookie("token", token, 60);
+}
+socket.json.send({
+  component: 'pad',
+  type: 'CLIENT_READY',
+  padId: <%-JSON.stringify(groupid + '$!status')%>,
+  sessionID: decodeURIComponent(readCookie("sessionID")),
+  password: null,
+  token: token,
+  protocolVersion: 2
+});
+socket.on('message', function (obj) {
+  if (obj.data.type == "CUSTOM") {
+    var maps = obj.data.payload.maps;
+    for (var i = 0; i < maps.length; ++i) {
+      var id = maps[i].macro || maps[i].path;
+      updateId(id, maps[i]);
+    }
+  }
+});
+</script>
+
+</body>
+</html>

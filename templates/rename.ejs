@@ -1,0 +1,18 @@
+<html>
+<head>
+<title>Rename</title>
+</head>
+<body>
+<h1><%=project%>: Rename <%=path%></h1>
+
+<% if (locals.message) { %>
+   <h2><%=message%></h2>
+<% } %>
+
+<form method="post" action="">
+<label>New Filename: <input type="text" name="name" /></label><br />
+<input type="submit" value="Rename" />
+</form>
+
+</body>
+</html>

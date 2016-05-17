@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>New <%=noun%></title>
+<script type="text/javascript">
+var macroTouched = false;
+function updateMacro() {
+  if (!macroTouched) {
+    document.forms[0].macro.value = '\\<%=cls[0].toLowerCase()%>'
+      + document.forms[0].name.value
+        .replace(/[ .()]+(\w)/g, function (m, c) { return c.toUpperCase(); })
+        .replace(/\W/g, "");
+  }
+}
+
+<% if (path) { %>
+var fileTouched = false;
+function updateFile() {
+  if (!fileTouched) {
+    document.forms[0].file.value = document.forms[0].macro.value.slice(2)
+      + '.tex';
+  }
+}
+<% } %>
+</script>
+</head>
+<body>
+<h1><%=project%>: New <%=noun%></h1>
+
+<% if (locals.message) { %>
+   <h2><%=message%></h2>
+<% } %>
+
+<form method="post" action="">
+<label>GameTeX Type: <input type="text" name="objtype" value="<%=objtype%>" /></label><br />
+<label>Name or Sheet Title: <input type="text" name="name" oninput="updateMacro()<% if (path) {%>;updateFile()<% } %>" /></label><br />
+<label>Macro: <input type="text" name="macro" oninput="macroTouched = true<% if (path) {%>;updateFile()<% } %>"/></label><br />
+<% if (path) { %>
+<label>Filename: <input type="text" name="file" oninput="fileTouched = true" /></label><br />
+<% } %>
+<input type="submit" value="Create" />
+<% if (return_to) { %>
+  <input type="hidden" name="return_to" value="<%=return_to%>" />
+<% } %>
+</form>
+
+</body>
+</html>

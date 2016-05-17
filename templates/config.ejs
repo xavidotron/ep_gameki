@@ -1,0 +1,18 @@
+<html>
+<head>
+<title>Status</title>
+<% include ../../ep_bazki/templates/head.ejs %>
+</head>
+<body>
+<% locals.title = "Config" %>
+<% include ../../ep_bazki/templates/header.ejs %>
+
+<form action="" method="post">
+<label>Game Name: <input type="text" name="gamename" value="<%=gamename%>" /></label><br />
+<label>Game Date: <input type="text" name="gamedate" value="<%=gamedate%>" /></label> (as used on sheets)<br />
+<label>Signs will be taken down by: <input type="text" name="takedownby" value="<%=takedownby%>" /></label><br />
+<label>Zephyr Class: <input type="text" name="zephyr_class" value="<%=zephyr_class%>" /></label><br />
+<input type="submit" value="Save" />
+</form>
+</body>
+</html>

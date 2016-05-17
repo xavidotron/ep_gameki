@@ -1,0 +1,85 @@
+@font-face {
+	font-family: 'icomoon';
+	src:url('fonts/icomoon.eot?-g7gp55');
+	src:url('fonts/icomoon.eot?#iefix-g7gp55') format('embedded-opentype'),
+		url('fonts/icomoon.ttf?-g7gp55') format('truetype'),
+		url('fonts/icomoon.woff?-g7gp55') format('woff'),
+		url('fonts/icomoon.svg?-g7gp55#icomoon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="moon-"]:before, [class*=" moon-"]:before {
+	font-family: 'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.moon-file-add:before {
+	content: "\f017";
+}
+.moon-file-o:before {
+	content: "\f016";
+}
+.moon-book:before {
+	content: "\f02d";
+}
+.moon-list:before {
+	content: "\f03a";
+}
+.moon-plus-circle:before {
+	content: "\f055";
+}
+.moon-wrench:before {
+	content: "\f0ad";
+}
+.moon-group:before {
+	content: "\f0c0";
+}
+.moon-users:before {
+	content: "\f0c0";
+}
+.moon-bolt:before {
+	content: "\f0e7";
+}
+.moon-flash:before {
+	content: "\f0e7";
+}
+.moon-file-text-o:before {
+	content: "\f0f6";
+}
+.moon-folder-o:before {
+	content: "\f114";
+}
+.moon-file:before {
+	content: "\f15b";
+}
+.moon-file-pdf-o:before {
+	content: "\f1c1";
+}
+.moon-file-image-o:before {
+	content: "\f1c5";
+}
+.moon-file-photo-o:before {
+	content: "\f1c5";
+}
+.moon-file-picture-o:before {
+	content: "\f1c5";
+}
+.moon-newspaper-o:before {
+	content: "\f1ea";
+}
+.moon-user-secret:before {
+	content: "\f21b";
+}
+.moon-settings:before {
+	content: "\e600";
+}

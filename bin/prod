@@ -1,0 +1,119 @@
+#!/bin/bash
+
+set -e
+
+function usage {
+    cat >&2 <<EOF
+Usage:
+  $0 [-l|-t] [-j JOBNAME] [-o OUTDIR] PATH.tex [PATH.tex...]
+  $0 [-o OUTDIR] OPTION-MACRO
+
+Examples:
+  $0 Dir/file.tex
+  $0 listchar-cJamesBond
+  $0 -l [-j cJamesBond] Mail/casting.tex
+
+Options:
+  -l: use lualatex instead of pdflatex
+  -t: use lualatex and cat the text output (for files using Gameki/text.sty)
+  -j JOBNAME: pass JOBNAME as the jobname to the latex file
+  -o OUTDIR: directory for output to go to
+EOF
+}
+
+reldir=""
+updir=""
+if ! [ -d "LaTeX" ] ; then
+    updir="$(basename "$(pwd)")/"
+    reldir="../"
+    while ! [ -d "$reldir/LaTeX" ] ; do
+	updir="$(cd "$reldir" && basename "$(pwd)")/$updir"
+	reldir="../$reldir"
+	if [ "$(cd "$reldir" && pwd)" == "/" ]; then
+	    echo "No LaTeX directiory found; are you in a GameTeX directory?" >&2
+	    exit 1
+	fi
+    done
+fi
+
+dir="$(cd "$reldir" && pwd)"
+
+# Not all versions of latexmk support the -lualatex flag directly.
+lualatex="-pdflatex=lualatex %O %S"
+
+flags=("-pdf")
+extra=""
+cat_after=""
+while getopts "ltj:o:" optchar ; do
+  case "${optchar}" in
+      l)
+	  flags=("${flags[@]}" "$lualatex")
+	  ;;
+      t)
+	  flags=("${flags[@]}" "$lualatex")
+	  cat_after="true"
+	  ;;
+      j)
+	  jobname="$OPTARG"
+	  ;;
+      o)
+	  outdir="$OPTARG"
+	  ;;
+      \?)
+	  usage
+	  exit 1
+	  ;;
+  esac
+done
+shift $((OPTIND-1))
+
+if [ $# -le 0 ] ; then
+    usage
+    exit 1
+fi
+
+export TEXINPUTS="$dir/LaTeX/:"
+export "$(basename "$dir")"="$dir"
+
+if echo "$1" | egrep -q '^[^.]+-[^.]+$' ; then
+    # If the arg has a dash and no dot, then it's a jobname to pass to
+    # Gameki/prod.tex.
+    jobname="$1"
+    shift
+    set "$dir/Gameki/prod.tex"
+fi
+
+for f in "$@" ; do
+
+    if [ -z "$outdir" ] ; then
+	outdir="Out"
+	if [ -n "$reldir" ] ; then
+	    outdir="$reldir$outdir"
+	fi
+    fi
+    if [ -n "$jobname" ] ; then
+	flags=("${flags[@]}" "-jobname=$jobname")
+        # If we reimplement in python, we could use os.path.relpath()
+	outdir="$reldir$outdir/$(basename "$f" | cut -d . -f 1)"
+    else
+	outdir="$outdir/$updir$(dirname "$f")" 
+    fi
+    mkdir -p "$outdir"   
+    flags=("-outdir=$outdir" "${flags[@]}")
+    
+    # NOTE(xavid): setting outdir leads to an unnecessary extra pass when
+    #              the .aux file didn't already exist. We could theoretically
+    #              try to fix this.
+    latexmk -halt-on-error -interaction=nonstopmode "${flags[@]}" "$f" >&2
+done
+
+if [ $# -ge 2 ] ; then
+  echo "Finished prodding all files:" "$@" >&2
+fi
+
+if [ "$cat_after" ] ; then
+    if [ -z "$jobname" ] ; then
+	jobname="$(basename "$1" | cut -d . -f 1)"
+    fi
+    cat "$outdir/$jobname.txt"
+fi

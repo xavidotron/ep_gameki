@@ -1,0 +1,35 @@
+<html>
+<head>
+<title><%=locals.title%></title>
+<% include ../../ep_bazki/templates/head.ejs %>
+</head>
+<body>
+<% include ../../ep_bazki/templates/header.ejs %>
+
+<form action="" method="get">
+Run:
+<% for (var i = 0; i < runs.length; ++i) { %>
+  <label><input type="radio" name="run" value="<%=runs[i]%>"<%=run == runs[i] ? " checked" : ""%> /><%=runs[i]%></label>
+<% } %><br />
+Template:
+<% for (var i = 0; i < templates.length; ++i) { %>
+  <label><input type="radio" name="template" value="<%=templates[i]%>"<%=locals.template == templates[i] ? " checked" : ""%> /><%=templates[i]%></label>
+<% } %><br />
+  <input type="submit" value="Show" />
+</form>
+
+<% if (locals.output) { %>
+
+<form action="" method="post">
+SMTP Server: <input type="text" name="host" value="smtp.gmail.com" /><br />
+Username: <input type="text" name="user" value="xavid@pianojuice.net" /><br />
+Password: <input type="password" name="password" /><br />
+<label><input type="checkbox" name="dryrun" value="1" checked /> Dry Run (send all emails to the from address)</label><br />
+<input type="submit" name="send" value="Send Emails As Shown" />
+</form>
+
+   <pre><%=output%></pre>
+<% } %>
+
+</body>
+</html>
