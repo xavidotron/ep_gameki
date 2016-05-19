@@ -13,7 +13,7 @@ var colors = {
   OFF: "grey"
 };
 
-function zwriteAppender(suppress) {
+function zwriteAppender(zephyr_class, suppress) {
   if (suppress) {
     suppress = new RegExp(suppress);
   }
@@ -24,7 +24,7 @@ function zwriteAppender(suppress) {
     }
     execFile(
       "/usr/bin/zwrite",
-      ['-c', 'gameki-spew',
+      ['-c', zephyr_class,
        '-i', loggingEvent.level.toString(),
        '-s', os.hostname(),
        '-O', 'auto',
@@ -40,7 +40,7 @@ function zwriteAppender(suppress) {
 }
 
 function configure(config) {
-  return zwriteAppender(config.suppress);
+  return zwriteAppender(config.zephyr_class, config.suppress);
 }
 
 exports.appender = zwriteAppender;
