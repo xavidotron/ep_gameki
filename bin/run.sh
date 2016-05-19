@@ -3,6 +3,8 @@
 set -e
 
 while true ; do
-    k5start -f ~/Private/bazki.keytab daemon/bazki.mit.edu bin/run.sh
-    zwrite -d -c gameki-spew -m 'Exited; restarting!'
+    k5start -f "$1" "$2" bin/run.sh
+    if [ -n "$3" ] ; then
+        zwrite -d -c "$3" -m 'Exited; restarting!'
+    fi
 done
