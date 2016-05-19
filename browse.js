@@ -546,7 +546,7 @@ exports.expressCreateServer = function (hook_name, context, cb) {
 
   // /newgame
   serve.registerRepoCreator(context.app, '/newgame',
-                            __dirname + "/bin/new-gameki.sh");
+                            __dirname + "/bin/new-gametex.sh");
 
   // /s/
   context.app.get('/s/:filename(*)', function (req, res) {

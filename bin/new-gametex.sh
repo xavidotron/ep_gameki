@@ -11,6 +11,8 @@ cp -R $gametex/* ./
 
 Extras/changeclass.pl . game "$1"
 
+git clone "https://github.com/xavidotron/gameki-tools.git" Gameki
+
 svn add *
 svn ci -m 'Initial GameTeX checkout.'
 
