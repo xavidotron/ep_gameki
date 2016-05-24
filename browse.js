@@ -215,6 +215,20 @@ function prod(project, path, cb) {
     });
 }
 
+function maybe_readdir(path, cb) {
+  fs.readdir(path, function (error, contents) {
+    if (error) {
+      if (error.code == 'ENOENT') {
+        cb(null, []);
+      } else {
+        cb(error);
+      }
+      return;
+    }
+    cb(null, contents);
+  });
+}
+
 var YAML_CONFIG = ['zephyr_class'];
 var DEF_CONFIG = ['gamename', 'gamedate', 'takedownby'];
 
@@ -406,7 +420,7 @@ exports.expressCreateServer = function (hook_name, context, cb) {
       .defer(db.mapEntriesFromList, project, 'Lists/green-LIST.tex')
       .defer(db.mapEntriesFromList, project, 'Lists/white-LIST.tex')
       .defer(db.mapYamlFromDirectory, project, 'Handouts/')
-      .defer(fs.readdir, util.get_checkout(project) + 'Notes/')
+      .defer(maybe_readdir, util.get_checkout(project) + 'Notes/')
       .await(function (error, chars, blues, greens, whites, handouts, notedir) {
         if (error) { ERR(error, res); return; }
 
