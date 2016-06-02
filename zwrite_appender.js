@@ -33,7 +33,7 @@ function zwriteAppender(zephyr_class, suppress) {
              + '>'],
       function (error, stdout, stderr) {
         if (error) {
-          console.error('zwrite_filter', error, stderr);
+          console.info('zwrite_filter', error, stderr);
         }
       });
   };
