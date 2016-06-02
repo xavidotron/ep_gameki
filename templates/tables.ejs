@@ -52,6 +52,9 @@
               <form method="post" action="/g/<%=project%>/create/<%=cdir%>">
                 <input type="hidden" name="file" value="<%=data[key][i].file || data[key][i].macro.slice(2) + '.tex'%>">
                 <input type="hidden" name="macro" value="<%=data[key][i].macro%>">
+                <% if (data[key][i].file) { %>
+                  <input type="hidden" name="no_edit_list" value="1" />
+                <% } %>
                 <button class="moon-file-add" title="Add File"></button>
               </form>
             <% } %>

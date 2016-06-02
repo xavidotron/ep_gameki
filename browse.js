@@ -72,7 +72,7 @@ function createFile(project, dir, info, res) {
     q.defer(svn.new_file, project, dir + name, data, info.author);
     if ('objtype' in info.body) {
       q.defer(addListEntry, project, cls, info);
-    } else if ('macro' in info.body) {
+    } else if ('macro' in info.body && !('no_edit_list' in info.body)) {
       db.setMacroMetadata(
         project, util.listForClass(
           util.classForDirectory(project, dir)),
@@ -414,7 +414,8 @@ exports.expressCreateServer = function (hook_name, context, cb) {
       });
   });
 
-  serve.register_plain_url(context.app, 'status', function (project, info, res) {
+  serve.register_plain_url(context.app, 'status', function (
+    project, info, res) {
     queue().defer(db.mapEntriesFromList, project, 'Lists/char-LIST.tex')
       .defer(db.mapEntriesFromList, project, 'Lists/blue-LIST.tex')
       .defer(db.mapEntriesFromList, project, 'Lists/green-LIST.tex')
@@ -440,6 +441,10 @@ exports.expressCreateServer = function (hook_name, context, cb) {
         var q = queue();
         for (var k in data) {
           for (var i = 0; i < data[k].length; ++i) {
+            console.log(data[k][i].file, /\.[^/]+$/.exec(data[k][i].file));
+            if (data[k][i].file && !/\.[^/]+$/.exec(data[k][i].file)) {
+              data[k][i].file += '.tex';
+            }
             data[k][i].words_readonly = true;
             if (data[k][i].path) {
               q.defer(function (map, callback) {
