@@ -6,7 +6,6 @@
 function $(id) {
   return document.getElementById(id);
 }
-document.domain = document.domain;
 </script>
 </head>
 <body>
@@ -84,7 +83,7 @@ function handlePending() {
 }
 
 function setMetadata(key, value) {
-  try {
+  //try {
     var pad = $('body').contentWindow.pad;
     pad.sendClientMessage({
       type: 'SET_METADATA',
@@ -93,9 +92,9 @@ function setMetadata(key, value) {
       list: <%-JSON.stringify(list)%>,
       macro: current_macro,
     });
-  } catch (e) {
-    alert(e);
-  }
+  //} catch (e) {
+  //  alert(e);
+  //}
 }
 
 handleMetadata(<%-JSON.stringify(macro)%>, 
