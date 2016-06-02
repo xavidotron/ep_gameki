@@ -1,13 +1,17 @@
 #!/bin/bash
 
+set -e
+
 tempdir="$(mktemp -d)"
 
 svn co "file://`pwd`/repos/$1" "$tempdir"
 cd "$tempdir"
 
-gametex="/afs/athena.mit.edu/user/k/e/kenclary/Public/Guild/GameTeX/GameTeX"
+gametex="http://web.mit.edu/kenclary/Public/Guild/GameTeX/gametex.tar.bz2"
 
-cp -R $gametex/* ./
+curl "$gametex" -o gametex.tar.bz2
+tar --strip-components=1 -xf gametex.tar.bz2
+rm gametex.tar.bz2
 
 Extras/changeclass.pl . game "$1"
 
