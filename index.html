@@ -28,10 +28,18 @@
         </ul>
       </header>
       <section>
-        <h2>
+        <h1>
+<a id="gameki" class="anchor" href="#gameki" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Gameki</h1>
+
+<h2>
 <a id="about-gameki-2" class="anchor" href="#about-gameki-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>About Gameki 2</h2>
 
 <p>Gameki is an online interface for collaboratively editing LARPs, allowing multiple GMs to contribute without getting in each other's way.</p>
+
+<p>Gameki is in Alpha. It's been used for several games, but still has
+rough edges and is undergoing active development. All edits and
+history are stored in Subversion, so no content should get lost, but
+you may still encounter bugs or missing features.</p>
 
 <h3>
 <a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h3>
@@ -40,9 +48,12 @@
 <li>Interactive, real-time collaborative editing in your web browser, powered by <a href="http://etherpad.org/">Etherpad Lite</a>.</li>
 <li>Based on <a href="http://web.mit.edu/kenclary/Public/Guild/GameTeX/">GameTeX</a> for powerful parameterization abilities and full GameTeX compatibility.</li>
 <li>Automatic Subversion syncing: GMs can edit with Subversion and a text editor if they wish.</li>
-<li>See and edit sheet metadata alongside the sheet text.</li>
+<li>See and edit sheet metadata alongside the sheet text or in table form.</li>
 <li>Send casting hint or packet emails, prod sheets, and do interactive casting (via <a href="http://xavidotron.github.io/gameki-tools/">Gameki Tools</a>).</li>
 <li>Runs on <a href="http://xvm.mit.edu/">XVM</a> (or presumably any cloud provider).</li>
+<li>Bi-directional Zephyr/Etherpad chat gateway.</li>
+<li>Easily take GM notes that will be available from Subversion later.</li>
+<li>Paste formatted rich text from another app and have it mostly DTRT.</li>
 </ul>
 
 <h3>
@@ -61,6 +72,85 @@
 <li>Having a different markup language or data/production model like Gameki 1 did.</li>
 <li>Running on scripts.mit.edu; unfortunately, it's hard to make Etherpad Lite and Scripts play nice.</li>
 </ul>
+
+<h3>
+<a id="bugs-and-issues" class="anchor" href="#bugs-and-issues" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Bugs and Issues</h3>
+
+<p>See <a href="https://github.com/xavidotron/ep_gameki/issues">https://github.com/xavidotron/ep_gameki/issues</a>.</p>
+
+<h2>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting Started</h2>
+
+<p>Xavid has a dev server you're welcome to use. Talk to him to get set up. Or
+you can run your own server by following the installation and setup instructions
+here.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>These instructions assume a Debian-y Linux server, but can probably work with
+other systems.</p>
+
+<p>Note that we here use my patched version of Etherpad Lite. Once my pull requests
+get merged, we can go back to the upstream version.</p>
+
+<div class="highlight highlight-source-shell"><pre>$ sudo apt-get update
+$ sudo apt-get install npm subversion texlive-latex-base texlive-latex-extra \
+    texlive-fonts-recommended texlive-xetex latexmk texlive-luatex git curl \
+    nodejs nodejs-legacy
+$ git clone https://github.com/xavidotron/etherpad-lite.git
+$ mkdir etherpad-lite/src/node_modules
+$ <span class="pl-c1">cd</span> etherpad-lite/src/node_modules
+$ git clone https://github.com/xavidotron/yajsml.git etherpad-yajsml
+$ <span class="pl-c1">cd</span> ../..
+$ npm install queue-async underscore.string synchronized escape-regexp js-yaml \
+    findit deep-equal temp is-binary-path jsdifflib unorm body-parser \
+    cookie-parser
+$ <span class="pl-c1">cd</span> node_modules
+$ git clone https://github.com/xavidotron/ep_bazki.git
+$ git clone https://github.com/xavidotron/ep_gameki.git
+$ <span class="pl-c1">cd</span> ..
+$ mkdir checkouts repos workdirs</pre></div>
+
+<p>For Zephyr support, additionally:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ sudo apt-get install zephyr-clients krb5-user tzc libzephyr4-krb5 kstart</pre></div>
+
+<h2>
+<a id="running" class="anchor" href="#running" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running</h2>
+
+<h3>
+<a id="without-zephyr" class="anchor" href="#without-zephyr" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Without Zephyr</h3>
+
+<p>If running without Zephyr, you can just use the normal Etherpad run script:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ <span class="pl-k">while</span> <span class="pl-c1">true</span> <span class="pl-k">;</span> <span class="pl-k">do</span> bin/run.sh <span class="pl-k">;</span> <span class="pl-k">done</span></pre></div>
+
+<h3>
+<a id="with-zephyr" class="anchor" href="#with-zephyr" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>With Zephyr</h3>
+
+<p>If you want to use the Zephyr support, you first need a keytab.  You
+can get a daemon keytab for a host you own by emailing
+<a href="mailto:accounts@mit.edu">accounts@mit.edu</a>.</p>
+
+<p>You may want errors to get sent to a particular Zephyr class. To
+achieve this, add something like the following to the "appenders"
+block of settings.json:</p>
+
+<div class="highlight highlight-source-json"><pre>      , { <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>logLevelFilter<span class="pl-pds">"</span></span>
+        , <span class="pl-s"><span class="pl-pds">"</span>level<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>warn<span class="pl-pds">"</span></span>
+        , <span class="pl-s"><span class="pl-pds">"</span>appender<span class="pl-pds">"</span></span>:
+          {  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ep_gameki/zwrite_appender<span class="pl-pds">"</span></span>
+             , <span class="pl-s"><span class="pl-pds">"</span>suppress<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Authentication try failed<span class="pl-pds">"</span></span>
+             , <span class="pl-s"><span class="pl-pds">"</span>zephyr_class<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>your-spew-class<span class="pl-pds">"</span></span>
+          }
+        }</pre></div>
+
+<p>Substitute the path and principle of your keytab, and optionally a
+zephyr class for restart notifications, in the below command:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ node_modules/ep_gameki/bin/run.sh <span class="pl-k">~</span>/Private/bazki.keytab \
+    daemon/bazki.mit.edu your-spew-class</pre></div>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/xavidotron">xavidotron</a></p>
