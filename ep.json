@@ -8,6 +8,7 @@
         "bazkiSavingPad": "ep_gameki/edits",
         "expressCreateServer": "ep_gameki/browse",
         "handleMessage": "ep_gameki/browse",
+        "eejsBlock_indexWrapper": "ep_gameki/browse",
         "clientVars": "ep_gameki/editing",
         "padInitToolbar": "ep_gameki/editing",
         "eejsBlock_styles": "ep_gameki/editing",

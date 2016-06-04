@@ -15,7 +15,7 @@ exports.clientVars = function (hook_name, context, cb) {
 
 function fromFile(file) {
   return function (hook_name, context, cb) {
-    context.content +=  fs.readFileSync(__dirname + '/data/' + file);
+    context.content += fs.readFileSync(__dirname + '/data/' + file);
     cb();
   };
 }

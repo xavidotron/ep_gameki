@@ -1,0 +1,23 @@
+<div style="text-align: center">
+
+<div>
+<form action="/newgame" style="height: auto; display: inline-block">
+<button id="button" style="width: auto">New Game</button>
+</form>
+</div>
+
+<div>
+<form action="/addmit" style="height: auto; display: inline-block">
+<button id="button" style="width: auto">Add Existing Locker Repo</button>
+</form>
+</div>
+
+<div style="width: 300px; display: inline-block">
+<label id="label" for="padname">or go to an existing game by project name:</label> 
+<form action="#" onsubmit="location.href = '/g/' + document.getElementById('padname').value;return false;"> 
+  <input type="text" id="padname" maxlength="50" autofocus="" x-webkit-speech="" style="left: 0"> 
+  <button type="submit" style="right: 0">OK</button>
+</form>
+</div>
+
+</div>

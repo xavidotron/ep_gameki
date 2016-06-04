@@ -667,6 +667,11 @@ exports.handleMessage = function (hook_name, context, cb) {
   cb();
 };
 
+exports.eejsBlock_indexWrapper = function (hook_name, context, cb) {
+  context.content = fs.readFileSync(__dirname + '/data/index.html');
+  cb();
+};
+
 var project_to_zephyr_class = {};
 var zephyr_class_to_project = {};
 
