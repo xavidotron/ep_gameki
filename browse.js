@@ -567,6 +567,43 @@ exports.expressCreateServer = function (hook_name, context, cb) {
   serve.registerRepoCreator(context.app, '/newgame',
                             __dirname + "/bin/new-gametex.sh");
 
+  // /addmit
+  context.app.all('/addmit', function (req, res) {
+    var show_form = !('project' in req.body);
+    var message = req.body.message;
+    if (!show_form && req.body.project.indexOf(' ') != -1) {
+      message = "The project identifier can't contain a space.";
+      show_form = true;
+    }
+    if (!show_form && req.body.path && req.body.path.indexOf('..') != -1) {
+      message = "The path can't contain ..!";
+      show_form = true;
+    }
+    if (show_form) {
+      res.render("addmit.ejs", {message: message});
+    } else {
+      serve.startWait(res);
+      execFile(
+        __dirname + "/bin/add-mit.sh",
+        [req.body.project, req.body.path, req.body.username,
+         req.body.password],
+        function (error, stdout, stderr) {
+          if (error) {
+            console.log('new', error, stderr);
+            serve.finishWait(res, '/addmit',
+                             {message: stderr || "Adding failed."});
+            return;
+          }
+          queue().defer(svn.svn_read_all, req.body.project,
+                        new serve.WaitTicker(res), false)
+            .defer(svn.createSpecialPads, req.body.project)
+            .await(function () {
+              serve.finishWait(res, '/g/' + req.body.project + '/login');
+            });
+        });
+    }
+  });
+
   // /s/
   context.app.get('/s/:filename(*)', function (req, res) {
     res.sendFile(__dirname + '/static/' + req.params.filename,
