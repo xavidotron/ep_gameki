@@ -639,7 +639,7 @@ exports.handleMessage = function (hook_name, context, cb) {
       var padid = PadMessageHandler.sessioninfos[context.client.id].padId;
       var parts = padid.split('$')
       var project = db.groupid_to_project(parts[0]);
-      if (project in project_to_zephyr_class) {
+      if (project && project in project_to_zephyr_class) {
         queue().defer(AuthorManager.getAuthorName, authorid)
           .defer(PadManager.getPad, padid, '')
           .defer(GroupManager.listPads, parts[0])
