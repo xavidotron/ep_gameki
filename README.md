@@ -25,6 +25,8 @@ you may still encounter bugs or missing features.
 
 * Syntax highlighting, with an angry red for non-macro'd pronouns.
 * Support for interactive runtime websites.
+* Git support, I guess.
+* Repository types other than local or AFS.
 
 ### Non-Goals
 
@@ -67,7 +69,7 @@ $ cd node_modules
 $ git clone https://github.com/xavidotron/ep_bazki.git
 $ git clone https://github.com/xavidotron/ep_gameki.git
 $ cd ..
-$ mkdir checkouts repos workdirs
+$ mkdir checkouts repos workdirs passwd
 ```
 
 For Zephyr support, additionally:
