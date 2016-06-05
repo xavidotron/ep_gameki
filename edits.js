@@ -6,7 +6,7 @@ var PadManager = require("ep_etherpad-lite/node/db/PadManager");
 var db = require('ep_bazki/db');
 var util = require('ep_bazki/util');
 
-var COMMENT_RE = /^(?:%[^\n]*\n)*\n*/;
+var COMMENT_RE = /^(?:%[^\n]*\n)*\n+/;
 var BODY_RE = /(\\begin\{document\}\n(?:\n*\\name\{[^{}]*(?:\{\})?\}\n)?\n?)([^]*)(\\end\{document\})/;
 
 var under_comment_body = false;
@@ -59,12 +59,13 @@ exports.padUpdate = function (hook_name, context, cb) {
           if (error) { console.log('GPc', error); return; }
         
           var match = pad.atext.text.match(COMMENT_RE);
+          var new_text;
           if (!match) {
-            console.error('comment repl failed for ' + sp[0]);
-            return;
+            new_text = ctext + pad.atext.text;
+          } else {
+            new_text = pad.atext.text.slice(0, match.index) + ctext
+              + pad.atext.text.slice(match.index + match[0].length);
           }
-          var new_text = pad.atext.text.slice(0, match.index) + ctext
-            + pad.atext.text.slice(match.index + match[0].length);
 
           under_comment_body = true;
           db.setPadTxt(pad, new_text, authorid);
