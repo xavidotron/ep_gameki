@@ -58,10 +58,7 @@ $ sudo apt-get install npm subversion texlive-latex-base texlive-latex-extra \
     texlive-fonts-recommended texlive-xetex latexmk texlive-luatex git curl \
     nodejs nodejs-legacy
 $ git clone https://github.com/xavidotron/etherpad-lite.git
-$ mkdir etherpad-lite/src/node_modules
-$ cd etherpad-lite/src/node_modules
-$ git clone https://github.com/xavidotron/yajsml.git etherpad-yajsml
-$ cd ../..
+$ cd etherpad-lite
 $ npm install queue-async underscore.string synchronized escape-regexp js-yaml \
     findit deep-equal temp is-binary-path jsdifflib unorm body-parser \
     cookie-parser
