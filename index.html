@@ -53,6 +53,8 @@ you may still encounter bugs or missing features.</p>
 <ul>
 <li>Syntax highlighting, with an angry red for non-macro'd pronouns.</li>
 <li>Support for interactive runtime websites.</li>
+<li>Git support, I guess.</li>
+<li>Repository types other than local or AFS.</li>
 </ul>
 
 <h3>
@@ -90,10 +92,7 @@ $ sudo apt-get install npm subversion texlive-latex-base texlive-latex-extra \
     texlive-fonts-recommended texlive-xetex latexmk texlive-luatex git curl \
     nodejs nodejs-legacy
 $ git clone https://github.com/xavidotron/etherpad-lite.git
-$ mkdir etherpad-lite/src/node_modules
-$ <span class="pl-c1">cd</span> etherpad-lite/src/node_modules
-$ git clone https://github.com/xavidotron/yajsml.git etherpad-yajsml
-$ <span class="pl-c1">cd</span> ../..
+$ <span class="pl-c1">cd</span> etherpad-lite
 $ npm install queue-async underscore.string synchronized escape-regexp js-yaml \
     findit deep-equal temp is-binary-path jsdifflib unorm body-parser \
     cookie-parser
@@ -101,7 +100,7 @@ $ <span class="pl-c1">cd</span> node_modules
 $ git clone https://github.com/xavidotron/ep_bazki.git
 $ git clone https://github.com/xavidotron/ep_gameki.git
 $ <span class="pl-c1">cd</span> ..
-$ mkdir checkouts repos workdirs</pre></div>
+$ mkdir checkouts repos workdirs passwd</pre></div>
 
 <p>For Zephyr support, additionally:</p>
 
