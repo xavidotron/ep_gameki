@@ -105,6 +105,22 @@ var CASES = {
     ' ', ' ', '\\', 'i', 't', 'e', 'm', 'Bb', 'ab', 'rb', '\n',
     ' ', ' ', '\\', 'e', 'n', 'd', '{', 'i', 't', 'e', 'm', 'z', '}', '\n'],
    '  \\begin{itemz}[Foo]\n  \\item\\textbf{Bar}\n  \\end{itemz}\n'],
+  'titled list with indented items':
+  [[ 'Gb', 'ob', 'ab', 'lb', 'sb', '\n',
+     '*1', 'T', '\n',
+     '*1', 'G', '\n',
+     '*1', 'W', '\n',],
+   '\\begin{itemz}[Goals]\n  \\item T\n\\item G\n\\item W\n\\end{itemz}',
+   null,
+   '\\begin{itemz}[Goals]\n\\item T\n\\item G\n\\item W\n\\end{itemz}'],
+  'titled list with running items':
+  [[ 'Gb', 'ob', 'ab', 'lb', 'sb', '\n',
+     '*1', 'T', ' ', '\n',
+     '*1', 'G', '\n',
+     '*1', 'W', '\n',],
+   '\\begin{itemz}[Goals]\n  \\item T \\item G\\item W\n\\end{itemz}',
+   null,
+   '\\begin{itemz}[Goals]\n\\item T \n\\item G\n\\item W\n\\end{itemz}'],
   'ellipsis': [['…'], '\\ldots{}'],
   'fake ellipsis': [['.', '.', '.'], '\\ldots{}', ['…']],
   'fancy double quotes': [['“', 'F', 'o', 'o', '”'], "``Foo''"],
@@ -124,7 +140,7 @@ var CASES = {
 describe('texToTaggedChars', function () {
   for (var key in CASES) {
     var tchars;
-    if (CASES[key].length > 2) {
+    if (CASES[key].length > 2 && CASES[key][2]) {
       tchars = CASES[key][2];
     } else {
       tchars = CASES[key][0];
@@ -137,7 +153,12 @@ describe('texToTaggedChars', function () {
 
 describe('taggedCharsToTex', function () {
   for (var key in CASES) {
-    var tex = CASES[key][1];
+    var tex;
+    if (CASES[key].length > 3) {
+      tex = CASES[key][3];
+    } else {
+      tex = CASES[key][1];
+    }
     it(key, function (tchars, tex) {
       assert.deepEqual(util.taggedCharsToTex(tchars), tex);
     }.bind(null, CASES[key][0], tex));
