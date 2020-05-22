@@ -690,37 +690,39 @@ function zephyr_sub(project, zephyr_class) {
   }
 }
 
-var tzc = spawn('/usr/bin/tzc');
-tzc.stdout.on('data', function (data) {
-  data = data.toString();
-  if (!startsWith(data, ';')) {
-    var m = /\(class \. ([^)]+)\).*\(opcode \. ([^)]+)\).*\(sender \. "([^"]+)"\).*\(message \. \("(?:[^"\\]|\\"|\\\\)*" "((?:[^"\\]|\\"|\\\\)*)" *\)/.exec(data);
-    if (m) {
-      var cls = m[1];
-      var opcode = m[2];
-      var sender = m[3];
-      var msg = m[4].replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-
-      if (opcode != 'gameki' && cls in zephyr_class_to_project) {
-        var project = zephyr_class_to_project[cls];
-        db.get_groupid(project, function (error, group_id) {
-          queue()
-            .defer(AuthorManager.createAuthorIfNotExistsFor, sender, sender)
-            .defer(GroupManager.listPads, group_id)
-            .await(function (error, authordata, padsdata) {
-              if (error) { console.log('TZC', error); return; }
-              for (var i = 0; i < padsdata.padIDs.length; ++i) {
-                PadMessageHandler.sendChatMessageToPadClients(
-                  Date.now(), authordata.authorID, msg, padsdata.padIDs[i]);
-              }
-            });
-        });
+if (fs.existsSync('/usr/bin/tzc')) {
+  var tzc = spawn('/usr/bin/tzc');
+  tzc.stdout.on('data', function (data) {
+    data = data.toString();
+    if (!startsWith(data, ';')) {
+      var m = /\(class \. ([^)]+)\).*\(opcode \. ([^)]+)\).*\(sender \. "([^"]+)"\).*\(message \. \("(?:[^"\\]|\\"|\\\\)*" "((?:[^"\\]|\\"|\\\\)*)" *\)/.exec(data);
+      if (m) {
+	var cls = m[1];
+	var opcode = m[2];
+	var sender = m[3];ṭa
+        var msg = m[4].replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+        
+        if (opcode != 'gameki' && cls in zephyr_class_to_project) {
+          var project = zephyr_class_to_project[cls];
+          db.get_groupid(project, function (error, group_id) {
+            queue()
+              .defer(AuthorManager.createAuthorIfNotExistsFor, sender, sender)
+              .defer(GroupManager.listPads, group_id)
+              .await(function (error, authordata, padsdata) {
+                if (error) { console.log('TZC', error); return; }
+                for (var i = 0; i < padsdata.padIDs.length; ++i) {
+                  PadMessageHandler.sendChatMessageToPadClients(
+                    Date.now(), authordata.authorID, msg, padsdata.padIDs[i]);
+                }
+              });
+          });
+        }
+      } else if (!startsWith(data, '((tzcspew . cutoff)')) {
+        console.log('TZC', data);
       }
-    } else if (!startsWith(data, '((tzcspew . cutoff)')) {
-      console.log('TZC', data);
     }
-  }
-});
+  });
+}
 
 CONFIGS = {};
 util.for_each_project(function (project) {
