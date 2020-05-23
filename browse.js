@@ -257,9 +257,7 @@ exports.expressCreateServer = function (hook_name, context, cb) {
   // /g/.../atext/
   serve.register_path_url(context.app, 'atext', function (project, path, info, res) {
     var tilde_bits = path.split('~')
-    db.get_project_pad(project, tilde_bits[0], tilde_bits[1], function (error, pad) {
-      if (error) { ERR(error, res); return; }
-      
+    db.get_project_pad(project, tilde_bits[0], tilde_bits[1]).then(function (pad) {
       var tchars = util.atextToTaggedChars(pad, true);
       var text = '';
       for (var i = 0; i < tchars.length; ++i) {
@@ -273,9 +271,7 @@ exports.expressCreateServer = function (hook_name, context, cb) {
 
   // /g/.../text/
   serve.register_path_url(context.app, 'text', function (project, path, info, res) {
-    db.get_project_pad(project, path, function (error, pad) {
-      if (error) { ERR(error, res); return; }
-      
+    db.get_project_pad(project, path).then(function (pad) {
       res.render("pre.ejs", {
         text: pad.atext.text,
       });
